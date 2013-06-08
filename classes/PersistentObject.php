@@ -262,7 +262,7 @@ abstract class PersistentObject extends Model{
 		return $object_vars;
 	}
 	
-	private function exclude_base_attrs($object_vars)
+	private function exclude_base_attrs($object_vars, $exclude_id = false)
 	{
 		if (empty (PersistentObject::$excluded_attrs)) PersistentObject::$excluded_attrs = get_class_vars('PersistentObject');
 
@@ -270,10 +270,11 @@ abstract class PersistentObject extends Model{
 		foreach (PersistentObject::$excluded_attrs as $key => $value)
 		{
 				
-				if ($key != PersistentObject::$primary_key_column_name)
+				if ($key != PersistentObject::$primary_key_column_name || $exclude_id)
 				{
 					unset($object_vars[$key]);
 				}
+				
 		}
 
 		return $object_vars;
@@ -318,10 +319,11 @@ abstract class PersistentObject extends Model{
 		return $meta;
 	}
 
-	public function get_class_attributes()
+	public function get_class_attributes($class = null, $exclude_id = false)
 	{
-		$meta = $this->class_attributes(get_class($this));
-		$meta = $this->exclude_base_attrs($meta);
+		$class = (is_null($class))? get_class($this) : $class;
+		$meta = $this->class_attributes($class);
+		$meta = $this->exclude_base_attrs($meta, $exclude_id);
 
 		return $meta;
 	}

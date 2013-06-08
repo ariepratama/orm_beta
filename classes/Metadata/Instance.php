@@ -218,11 +218,11 @@ class Metadata_Instance{
 				if (is_object($_f_m))
 				{
 					/*if object is also creating*/
-					$res[$var_name] = new Attribute_External($this->_class.$_f_m->id_column_name(), $var_name.'_of_'.$this->_class, $_f_m->id_db_type(), true);
+					$res[$var_name] = new Attribute_External($this->_class.$_f_m->id_column_name(), $var_name.'_of_'.$this->get_table_name_of($var_name), $_f_m->id_db_type(), true);
 				}
 				else
 				{
-					$res[$var_name] = new Attribute_External($this->_class.$this->id_column_name(), $var_name.'_of_'.$this->table_name(), $_f_m, false);
+					$res[$var_name] = new Attribute_External($this->_class.$this->id_column_name(), $var_name.'_of_'.$this->get_table_name_of($var_name), $_f_m, false);
 					
 				}
 			}

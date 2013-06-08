@@ -21,7 +21,7 @@ class Broker{
 			if ( ! empty ($_saved_meta))
 			{
 				$_retrieved_meta = array_shift($_saved_meta);
-				print_r($_retrieved_meta);
+				
 				$_meta = new Metadata_Instance ($_retrieved_meta['class'], json_decode($_retrieved_meta['metadata'], true));
 			}
 			else
@@ -118,12 +118,14 @@ class Broker{
 		}
 	}
 
-	private static function init_relations($table_name, $_meta)
+	private static function init_relations($_meta)
 	{
 		if($_meta->has_extern_foreign_keys())
 		{
 			foreach($_meta->db_extern_foreign_columns() as $var_name => $ext) 
 			{
+				$table_name = $_meta->get_table_name_of($var_name);
+
 				/*relation name is combination of container class name and attribute class name*/
 				$rel_name = $ext->extern_table;
 				/*extern column is key column */
@@ -189,7 +191,7 @@ class Broker{
 		
 		Broker::init_foreign_keys($_meta);
 
-		Broker::init_relations($table_name, $_meta);
+		Broker::init_relations($_meta);
 		
 
 
@@ -203,7 +205,7 @@ class Broker{
 		// get the metadata
 		$_meta = ($meta == null)? Broker::get_metadata($obj) : $meta;
 		$_root_class = Utility::get_root_parent_class($obj_class);
-		echo 'root '.$_root_class.' root';
+		// echo 'root '.$_root_class.' root';
 		$_root_meta = Broker::get_metadata_for_class($_root_class);
 
 		$table_name = $_meta->table_name();
@@ -213,12 +215,12 @@ class Broker{
 		$is_update = $obj->is_retrieved(); //Broker::id_exist($obj_class, $obj->get_primary_key_value());
 		
 		// get the primary keys and column name of foreign objects
-		$f_objs = $obj->get_foreign_objects();
-		$internals = $f_objs['internal'];
-		$externals = $f_objs['external'];
+		// $f_objs = $obj->get_foreign_objects();
+		// $internals = $f_objs['internal'];
+		// $externals = $f_objs['external'];
 
-		$_key_value = $obj->get_key_value();
-		$_pk_value = $obj->get_primary_key_value();
+		// $_key_value = $obj->get_key_value();
+		// $_pk_value = $obj->get_primary_key_value();
 		
 		$_data = $obj->get_data();
 		
