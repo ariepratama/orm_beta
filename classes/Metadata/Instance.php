@@ -14,7 +14,7 @@ class Metadata_Instance{
 	{
 		$this->_class = $class; 
 		$this->_obj_meta = $obj_meta[$class];
-		print_r($obj_meta);
+		// print_r($obj_meta);
 		// $base_class = $obj_meta[Metadata_Constants::$BASE_CLASS_STRING];
 		// echo Metadata_Constants::$ID_METADATA_STRING;
 
@@ -218,11 +218,11 @@ class Metadata_Instance{
 				if (is_object($_f_m))
 				{
 					/*if object is also creating*/
-					$res[$var_name] = new Attribute_External($this->_class.$_f_m->id_column_name(), $var_name.'_of_'.$this->get_table_name_of($var_name), $_f_m->id_db_type(), true);
+					$res[$var_name] = new Attribute_External($this->get_table_name_of($var_name).$_f_m->id_column_name(), $var_name.'_of_'.$this->get_table_name_of($var_name), $_f_m->id_db_type(), true);
 				}
 				else
 				{
-					$res[$var_name] = new Attribute_External($this->_class.$this->id_column_name(), $var_name.'_of_'.$this->get_table_name_of($var_name), $_f_m, false);
+					$res[$var_name] = new Attribute_External($this->get_table_name_of($var_name).$this->id_column_name(), $var_name.'_of_'.$this->get_table_name_of($var_name), $_f_m, false);
 					
 				}
 			}

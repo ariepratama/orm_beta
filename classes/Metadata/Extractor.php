@@ -170,6 +170,29 @@ class Metadata_Extractor{
 		}
 		return $current;
 	}
+	private static function build_attributes_metadata_recursive($class, $separated)
+	{
+		$parent = get_parent_class($class);
+		$meta = array();
+		
+		if ($parent != 'PersistentObject')
+		{
+			$meta_parent = Metadata_Extractor::build_attributes_metadata_recursive($parent, $separated);
+			if (! empty($meta_parent))
+				$meta = array_merge($meta, $meta_parent);
+		}
+		
+
+		Utility::debug('build for '.$parent, $meta);
+		$meta_current = Metadata_Extractor::create_meta_array($class, $separated[$class]);
+		if (! empty ($meta_current))
+			$meta = array_merge($meta, $meta_current[Metadata_Constants::$ATTRIBUTES_STRING]);
+
+
+		return $meta;
+
+
+	}
 
 
 	public static function deserialize_object($object)
@@ -208,7 +231,16 @@ class Metadata_Extractor{
 				// if ( ! array_key_exists(Metadata_Constants::$ID_METADATA_STRING, $attrs))
 				// 	$attrs[Metadata_Constants::$ID_METADATA_STRING] = $separated[$root][Metadata_Constants::$ID_METADATA_STRING];
 
-				$meta_class[$class] = Metadata_Extractor::create_meta_array($class, $attrs);
+				// if ($class != $class_name)
+				// 	$real_attrs = $object->get_class_attributes($class, true);
+
+				// Utility::debug('the class attributes', $attrs);
+
+				$attr_meta = Metadata_Extractor::build_attributes_metadata_recursive($class, $separated);
+				// Utility::debug('this is test', $test);
+
+				$meta_class[$class][Metadata_Constants::$TABLE_NAME_STRING] = $class;//Metadata_Extractor::create_meta_array($class, $attrs);
+				$meta_class[$class][Metadata_Constants::$ATTRIBUTES_STRING] = $attr_meta;
 
 				$current_class_parent = (get_parent_class($class) == 'PersistentObject')? '':get_parent_class($class);
 				$meta_class[$class][Metadata_Constants::$PARENT_CLASS_STRING] = $current_class_parent;

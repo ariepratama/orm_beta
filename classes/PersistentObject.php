@@ -65,6 +65,7 @@ abstract class PersistentObject extends Model{
 	protected function __construct()
 	{
 		$_class = get_class($this);
+		$root = Utility::get_root_parent_class($_class);
 
 
 		/*initialize*/
@@ -76,21 +77,24 @@ abstract class PersistentObject extends Model{
 
 		/*check metadata if it's not empty*/
 		/*if metadata for a class empty then make new metadata*/
-		if ( ! array_key_exists($_class , PersistentObject::$key_cache))
+		if ( ! array_key_exists($root , PersistentObject::$key_cache))
 		{
-			try{
-				$n = Broker::get_max_id($this->_meta->table_name(), $this->_meta->id_column_name());
+			try{	
+				$root_meta = Broker::get_metadata_for_class($root);
+				$n = Broker::get_max_id($root_meta->table_name(), $root_meta->id_column_name());
 			}catch (Kohana_Exception $e){}
-			PersistentObject::$key_cache[$_class] = ( (! isset($n)) or empty($n))? 0:$n;
+			PersistentObject::$key_cache[$root] = ( (! isset($n)) or empty($n))? 0:$n;
+
+
 		}
 		
 		// increment the 'low' key
-		PersistentObject::$key_cache[$_class]++;
+		PersistentObject::$key_cache[$root]++;
 
-		$this->_id = PersistentObject::$key_cache[$_class];
-	
 
-	
+		$this->_id = PersistentObject::$key_cache[$root];
+
+		return $this;
 
 
 
@@ -160,7 +164,7 @@ abstract class PersistentObject extends Model{
 							foreach($val as $singular)
 							{
 								$var_col = $this->_meta->get_column_name_of($var_name);
-								$_table = $this->_meta->table_name();
+								$_table = $this->_meta->get_table_name_of($var_name);
 								$relation_id = Utility::relation_id_col($_table, $id_col);
 								$relation_table = Utility::relation_name($var_col, $_table);
 
@@ -277,6 +281,7 @@ abstract class PersistentObject extends Model{
 				
 		}
 
+
 		return $object_vars;
 	}
 	
@@ -328,7 +333,14 @@ abstract class PersistentObject extends Model{
 		return $meta;
 	}
 
-		
+	public function get_class_attributes_and_values($class = null, $exclude_id = false)
+	{
+		$class = (is_null($class))? get_class($this) : $class;
+		$attrs = get_class_vars($class);
+		$attrs = $this->exclude_base_attrs($attrs, $exclude_id);
+
+		return $attrs;
+	}		
 
 	// get the object values
 	public function get_values()
@@ -416,6 +428,7 @@ abstract class PersistentObject extends Model{
 	{
 		// only calling broker retrieve
 		$res = Broker::retrieve(get_class($this), $this->_query_conditions);
+
 		$this->assign_value($res);
 
 		// empty query conditions
@@ -460,9 +473,20 @@ abstract class PersistentObject extends Model{
 		{
 			foreach ($vals as $attr => $val)
 			{
+				$is_object = false;
+				$is_array = false;
+				if ($attr != PersistentObject::get_key_column_name() && $attr != PersistentObject::$primary_key_column_name)
+				{
+					$is_object = $this->_meta->is_attribute_object($attr);
+					$is_array = $this->_meta->is_attribute_array($attr);
+				}
+
 				if ( ! array_key_exists($attr, $this->included_attrs))
 				{		
-					$this->$attr = $val;
+					if(! $is_object && ! $is_array)
+						$this->$attr = $val;
+					else
+						$this->$attr = null;
 				}
 			}
 			return $this;
