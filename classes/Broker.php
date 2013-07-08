@@ -312,7 +312,7 @@ class Broker{
 		$join_table = array();
 		
 		$meta[$class] = Broker::get_metadata_for_class($class);
-		$join_table[] = $meta[$class]->table_name();
+		$join_table[$class] = $meta[$class]->table_name();
 
 		$current_meta = $meta[$class];
 		$root = Utility::get_root_parent_class($class);

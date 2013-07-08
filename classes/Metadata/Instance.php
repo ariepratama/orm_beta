@@ -9,6 +9,7 @@ class Metadata_Instance{
 
 	private $_foreign_meta = array();
 	private $_extern_f_meta = array();
+	private $_index_type;
 	 
 	public function __construct($class, $obj_meta)
 	{
@@ -123,8 +124,10 @@ class Metadata_Instance{
 		return $_attr_names;
 	}
 
+
 	public function get_column_name_of($var_name)
 	{
+		
 		return $this->attributes()[$var_name][Metadata_Constants::$COLUMN_NAME_STRING];
 	}
 

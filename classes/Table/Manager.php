@@ -30,8 +30,11 @@ class Table_Manager{
 		return $res;
 	}
 
-	public static function create_relation($rel_name, $f_key_name, $val_name, $f_key_type, $val_type)
+	public static function create_relation($rel_name, $f_key_name, $val_name, $f_key_type, $val_type, $index = null)
 	{
+		$index_type = null;
+		if (is_null($index))
+			
 		// foreign key added by calling function add_foreign_keys
 		$_create_sql = 'create table if not exists '.$rel_name.
 						'('.$f_key_name.' '.$f_key_type.', '.$val_name.' '.$val_type.')';
@@ -84,6 +87,8 @@ class Table_Manager{
 		
 		return DB::insert($table_name, $obj_attrs)->values($obj_values)->execute();
 	}
+
+
 	private static function insert_data_chunck($chunk)
 	{
 		if (is_array($chunk))

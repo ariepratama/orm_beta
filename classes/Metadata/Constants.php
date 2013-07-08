@@ -8,6 +8,7 @@ class Metadata_Constants{
 	public static $ATTRIBUTES_STRING = 'attributes';
 	public static $METADATA_STRING = 'metadata';
 	public static $DB_TYPE_STRING = 'db_type';
+	public static $APP_TYPE_STRING = 'app_type';
 	public static $REL_TYPE_STRING = 'rel_type';
 	public static $REL_WITH_STRING = 'rel_with';
 	public static $COLUMN_NAME_STRING = 'column_name';

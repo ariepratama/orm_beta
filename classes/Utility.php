@@ -2,7 +2,7 @@
 class Utility{
 
 	private static $base_types = array('boolean', 'text', 'int', 'double');
-	public static $is_debug = true;
+	public static $is_debug = false;
 	public static function get_root_parent_class($_class)
 	{
 		$root = get_parent_class($_class);

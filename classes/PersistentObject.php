@@ -25,10 +25,12 @@ abstract class PersistentObject extends Model{
 	// primary key for each object
 	protected $_key;	// class name hash
 	protected $_id;	// object id or primary key
+	protected $_id_column;
+	protected $_id_db_type;
 
 	protected $_retrieved = false;
-
-	protected $_id_column;
+	protected $_persisted = false;
+	
 	
 	// foreign key for other class that play role as attribute to this class
 	protected $_foreign_object;
@@ -38,10 +40,6 @@ abstract class PersistentObject extends Model{
 
 	
 		
-	public static function say_hello()
-	{
-		echo 'say hello from persistent object';
-	}
 		// get the object primary keys
 	public static function get_key_column_name()
 	{
@@ -95,10 +93,6 @@ abstract class PersistentObject extends Model{
 		$this->_id = PersistentObject::$key_cache[$root];
 
 		return $this;
-
-
-
-
 	}
 
 	private function init($class_name)
@@ -111,7 +105,8 @@ abstract class PersistentObject extends Model{
 		else
 		{
 			/*use the low key if column name for id not set*/
-			$this->_id_column = PersistentObject::$primary_key_column_name;
+			if (empty($this->_id_column))
+				$this->_id_column = PersistentObject::$primary_key_column_name;
 
 			/*initialize id as 1 if extracted automatically*/
 			$this->_id = 1;
@@ -122,7 +117,24 @@ abstract class PersistentObject extends Model{
 		}
 
 	}
-	
+	public function get_fields()
+	{
+		// $vars = get_object_vars($this);
+		/*include registered private attributes of an object*/
+		// $vars = $this->include_private_attrs($vars);
+		// $vars = $this->exclude_base_attrs($vars);
+
+		$vars = $this->_meta->attributes();
+		foreach($vars as $var => $value)
+		{	
+			unset($vars[$var]);
+			$vars[$value[Metadata_Constants::$COLUMN_NAME_STRING]] = $value[Metadata_Constants::$APP_TYPE_STRING];
+			
+		}
+
+		return $vars;
+
+	}
 
 	public function get_data()
 	{
@@ -161,7 +173,7 @@ abstract class PersistentObject extends Model{
 						if (is_array($val))
 						{
 							
-							foreach($val as $singular)
+							foreach($val as $index => $singular)
 							{
 								$var_col = $this->_meta->get_column_name_of($var_name);
 								$_table = $this->_meta->get_table_name_of($var_name);
@@ -249,6 +261,11 @@ abstract class PersistentObject extends Model{
 		return $this->_retrieved;
 	}
 
+	public function is_persisted()
+	{
+		return $this->persisted;
+	}
+
 	public function set_pk_value($val)
 	{
 		$this->_id = $val;
@@ -289,6 +306,9 @@ abstract class PersistentObject extends Model{
 	public function get_object_attributes()
 	{
 		$obj_vars =  get_object_vars($this);
+		
+		/*include registered private attributes of an object*/
+		$obj_vars = $this->include_private_attrs($obj_vars);
 
 		foreach ($obj_vars as $var_name => $value) 
 		{
@@ -303,8 +323,7 @@ abstract class PersistentObject extends Model{
 		/*excluding attributes from class PersistentObject*/
 		$obj_vars = $this->exclude_base_attrs($obj_vars);
 
-		/*include registered private attributes of an object*/
-		$obj_vars = $this->include_private_attrs($obj_vars);
+		
 
 		return $obj_vars;
 	}
@@ -434,6 +453,7 @@ abstract class PersistentObject extends Model{
 		// empty query conditions
 		$this->reset_query_conditions();
 		$this->_retrieved = true;
+		$this->_persisted = true;
 		return $this;
 
 	}
@@ -446,7 +466,11 @@ abstract class PersistentObject extends Model{
 		$objects = array();
 		foreach ($results as $res)
 		{
-			$objects[] = PersistentObject::factory(get_class($this))->assign_value($res);
+			$assigned = PersistentObject::factory(get_class($this))->assign_value($res);
+			$assigned->_retrieved = true;
+			$assigned->_persisted = true;
+
+			$objects[] =  $assigned;
 		}
 
 		// empty query conditions
