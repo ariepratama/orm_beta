@@ -147,7 +147,7 @@ abstract class PersistentObject extends Model{
 			
 			foreach($obj_attrs as $var_name => $val)
 			{
-				echo $var_name;
+				
 				if (! is_null($val)  /*and ( ! $this->_meta->is_attribute_object($var_name) and! $this->_meta->is_attribute_array($var_name)) */)
 				{
 					$table = $this->_meta->get_table_name_of($var_name);
@@ -263,7 +263,7 @@ abstract class PersistentObject extends Model{
 
 	public function is_persisted()
 	{
-		return $this->persisted;
+		return $this->_persisted;
 	}
 
 	public function set_pk_value($val)
@@ -306,7 +306,7 @@ abstract class PersistentObject extends Model{
 	public function get_object_attributes()
 	{
 		$obj_vars =  get_object_vars($this);
-		
+
 		/*include registered private attributes of an object*/
 		$obj_vars = $this->include_private_attrs($obj_vars);
 
@@ -333,12 +333,12 @@ abstract class PersistentObject extends Model{
 
 		$meta = Utility::change_array_format($class_attrs, $class_name);
 		$parent = get_parent_class($class_name);
+
 		// specialy for PersistentObject class
 		if( $parent != 'PersistentObject')
 		{
 			$meta = Utility::blend_array($meta, $this->class_attributes($parent));
 		}
-
 
 		return $meta;
 	}
@@ -375,7 +375,7 @@ abstract class PersistentObject extends Model{
 
 			if (! empty($val)  and ( ! $this->_meta->is_attribute_object($var_name) and ! $this->_meta->is_attribute_array($var_name)))
 			{
-				echo $var_name.'<br/>';
+				
 				$_values[] = $val;
 				
 			}
@@ -448,12 +448,15 @@ abstract class PersistentObject extends Model{
 		// only calling broker retrieve
 		$res = Broker::retrieve(get_class($this), $this->_query_conditions);
 
-		$this->assign_value($res);
+		$assign = $this->assign_value($res);
 
 		// empty query conditions
 		$this->reset_query_conditions();
-		$this->_retrieved = true;
-		$this->_persisted = true;
+		if (! is_null($assign))
+		{
+			$this->_retrieved = true;
+			$this->_persisted = true;
+		}
 		return $this;
 
 	}
@@ -484,6 +487,7 @@ abstract class PersistentObject extends Model{
 	{
 		// only calling broker delete
 		$res = Broker::delete(get_class($this), $this->_query_conditions);
+		
 		// empty query conditions
 		$this->reset_query_conditions();
 		// print_r($res);
@@ -499,13 +503,13 @@ abstract class PersistentObject extends Model{
 			{
 				$is_object = false;
 				$is_array = false;
-				if ($attr != PersistentObject::get_key_column_name() && $attr != PersistentObject::$primary_key_column_name)
+				if (array_key_exists($attr, $this->_meta->attributes()) && $attr != PersistentObject::get_key_column_name() && $attr != PersistentObject::$primary_key_column_name)
 				{
 					$is_object = $this->_meta->is_attribute_object($attr);
 					$is_array = $this->_meta->is_attribute_array($attr);
 				}
 
-				if ( ! array_key_exists($attr, $this->included_attrs))
+				if ( ! array_key_exists($attr, $this->included_attrs) && array_key_exists($attr, $this->_meta->attributes()))
 				{		
 					if(! $is_object && ! $is_array)
 						$this->$attr = $val;
@@ -524,6 +528,7 @@ abstract class PersistentObject extends Model{
 	{
 		
 		$this->_query_conditions[] = array('type' => 'where','parameters' => array($attr, $operator, $val));
+		
 		return $this;	
 	}
 

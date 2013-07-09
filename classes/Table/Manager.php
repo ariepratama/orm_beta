@@ -170,7 +170,8 @@ class Table_Manager{
 
 			Utility::debug('update chunk: ',$chunk);	
 			// $merged = array_combine($chunk->columns(), $chunk->values());
-			DB::update($chunk->table)->set(array_combine($chunk->update_columns(), $chunk->update_values()))->where($chunk->id_column, '=', $chunk->id);
+			if (! empty($chunk))
+				DB::update($chunk->table)->set(array_combine($chunk->update_columns(), $chunk->update_values()))->where($chunk->id_column, '=', $chunk->id)->execute();
 			// DB::insert($chunk->table, $chunk->columns())->values($chunk->values())->execute();	
 		}
 	}
@@ -241,6 +242,19 @@ class Table_Manager{
 	{
 		$res =  DB::select(array(DB::expr('MAX('.$column.')'), 'counter'))->from($_class)->execute()->get('counter');
 		return $res;
+	}
+
+	public static function force_add_column_to($table_name, $columns, $types)
+	{
+		$sql = "alter table $table_name ";
+
+		foreach($columns as $col)
+			$sql = $sql."add column $col ".array_shift($types)." ,";
+		
+		
+		$sql = substr($sql, 0, -1);
+
+		return DB::query(null, $sql)->execute();
 	}
 	
 }

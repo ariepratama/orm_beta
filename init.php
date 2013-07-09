@@ -15,4 +15,8 @@
 			primary key (class_hash)
 		)
 	')->execute();
+	try{
+		// Table_Manager::force_add_column_to('model_ruangan',array('lantai'), array('integer'));
+		Table_Manager::force_add_column_to('model_ruangan',array('rumah'), array('text'));
+	}catch(Database_Exception $e){}
 // }

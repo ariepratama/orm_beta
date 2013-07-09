@@ -113,9 +113,13 @@ class DataRow{
 	public function update_columns()
 	{
 		$_cols = $this->columns;
+
 		// array_push($_cols, $this->key_column);s
-		if ($this->id_exists)
-			unset($_cols, $this->id_column);
+		if ($this->id_exists){
+			unset($_cols[$this->id_column]);
+		}
+		
+
 		return $_cols;
 	}
 
@@ -125,7 +129,7 @@ class DataRow{
 		$_vals = $this->values;
 		// array_push($_vals, $this->key);
 		if ($this->id_exists)
-			unset($_vals, $this->id);
+			unset($_vals[$this->id_column]);
 		return $_vals;
 	}
 
