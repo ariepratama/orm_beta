@@ -278,7 +278,8 @@ class Metadata_Extractor{
 			else
 			{
 				$meta_class = $meta_class->as_array();
-				$_table = $meta_class[Metadata_Constants::$TABLE_NAME_STRING];
+
+				$_table = $meta_class[$class][Metadata_Constants::$TABLE_NAME_STRING];
 				// if ($meta_class !== $meta[$class])
 				// 	Broker::update_metadata($class, json_encode($meta[$class]));
 

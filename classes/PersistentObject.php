@@ -141,6 +141,11 @@ abstract class PersistentObject extends Model{
 
 	}
 
+	public function get_metadata()
+	{
+		return $this->_meta;
+	}
+
 	public function get_data()
 	{
 		if (! empty($this->_meta))

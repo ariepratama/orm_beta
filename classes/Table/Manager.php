@@ -214,9 +214,11 @@ class Table_Manager{
 		{
 			$con_type = $condition['type'];
 			$con_param = $condition['parameters'];
-			$col_name = $class_meta->get_column_name_of($con_param[0]);
 
-			$query->$con_type($col_name, $con_param[1], $con_param[2]);
+			$col_name = $class_meta->get_column_name_of($con_param[0]);
+			$table = $class_meta->get_table_name_of($con_param[0]);
+
+			$query->$con_type($table.'.'.$col_name, $con_param[1], $con_param[2]);
 		}
 
 		return $query->execute();

@@ -179,8 +179,12 @@ class Metadata_Instance{
 					// if relation then get the object name, for one-to-one relation with object
 					// $foreign_name = $_attr_meta['rel_with'];
 					// only create column if one to one relationship
-					if($_attr_meta[Metadata_Constants::$REL_TYPE_STRING] == 'one_to_one')
-						$_attrs_arr[] = $_attr_meta[Metadata_Constants::$COLUMN_NAME_STRING].' '.Table_Manager::$PersistentObject_primary_key_type;
+					if($_attr_meta[Metadata_Constants::$REL_TYPE_STRING] == 'one_to_one'){
+						$obj = new $this->_class();
+						// assume table name and object name are the same
+
+						$_attrs_arr[] = $_attr_meta[Metadata_Constants::$COLUMN_NAME_STRING].' '.$obj->get_id_db_type();
+					}
 				}
 			}
 
