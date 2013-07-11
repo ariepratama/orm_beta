@@ -201,6 +201,7 @@ class Metadata_Extractor{
 		$obj_attrs = $object->get_object_attributes();		
 		$class_name = get_class($object);
 		$class_meta = $object->get_class_attributes();
+		$id_type = $object->get_id_db_type();
 		// echo 'base: sdasdf';
 		$root = Utility::get_root_parent_class($class_name);
 
@@ -244,6 +245,8 @@ class Metadata_Extractor{
 
 				$current_class_parent = (get_parent_class($class) == 'PersistentObject')? '':get_parent_class($class);
 				$meta_class[$class][Metadata_Constants::$PARENT_CLASS_STRING] = $current_class_parent;
+
+
 				if (! empty($current_class_parent))
 				{
 					$meta_class[$class][Metadata_Constants::$ATTRIBUTES_STRING][Metadata_Constants::$ID_METADATA_STRING] = Metadata_Extractor::create_atribute_metadata(
@@ -255,7 +258,9 @@ class Metadata_Extractor{
 																																	);
 					
 				}
-
+				if (! is_null($id_type))
+					$meta_class[$class][Metadata_Constants::$ATTRIBUTES_STRING][Metadata_Constants::$ID_METADATA_STRING][Metadata_Constants::$DB_TYPE_STRING] = $id_type;
+				
 				// Utility::debug('the meta class', $meta_class);
 				
 				// if (! array_key_exists(Metadata_Constants::$ID_METADATA_STRING, $meta_class[$class][Metadata_Constants::$ATTRIBUTES_STRING]))

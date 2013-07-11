@@ -72,10 +72,12 @@ abstract class PersistentObject extends Model{
 		/*initialize the 'high' key*/
 		$this->_key = md5($_class);
 
+		$is_id_integer = gettype($this->_id) == "integer" || is_null($this->_id_db_type);
+
 
 		/*check metadata if it's not empty*/
 		/*if metadata for a class empty then make new metadata*/
-		if ( ! array_key_exists($root , PersistentObject::$key_cache))
+		if ( ! array_key_exists($root , PersistentObject::$key_cache) && $is_id_integer)
 		{
 			try{	
 				$root_meta = Broker::get_metadata_for_class($root);
@@ -86,11 +88,13 @@ abstract class PersistentObject extends Model{
 
 		}
 		
-		// increment the 'low' key
-		PersistentObject::$key_cache[$root]++;
+		if ($is_id_integer)
+		{
+			// increment the 'low' key
+			PersistentObject::$key_cache[$root]++;
 
-
-		$this->_id = PersistentObject::$key_cache[$root];
+			$this->_id = PersistentObject::$key_cache[$root];
+		}
 
 		return $this;
 	}
@@ -109,7 +113,8 @@ abstract class PersistentObject extends Model{
 				$this->_id_column = PersistentObject::$primary_key_column_name;
 
 			/*initialize id as 1 if extracted automatically*/
-			$this->_id = 1;
+			if (is_null($this->_id) && empty($this->_id))
+				$this->_id = 1;
 			
 			// initialize class database
 			Broker::init($this);
@@ -249,6 +254,10 @@ abstract class PersistentObject extends Model{
 	public function get_pk_column_name()
 	{
 		return $this->_id_column;
+	}
+	public function get_id_db_type()
+	{
+		return $this->_id_db_type;
 	}
 
 	protected function set_pk_column_name($column)
