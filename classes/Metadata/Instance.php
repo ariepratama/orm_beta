@@ -154,7 +154,7 @@ class Metadata_Instance{
 	/*attributes for inserting to metadata table*/
 	public function as_meta_sql()
 	{
-		return array(md5($this->class_name()), $this->class_name(), $this->as_json());
+		return array(md5($this->class_name()), url::base(), $this->class_name(), $this->as_json());
 	}
 		
 	// get attributes for create table format

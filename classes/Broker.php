@@ -374,10 +374,14 @@ class Broker{
 	public static function save_metadata($class, $meta){
 		try
 		{
-			Table_Manager::insert(Broker::$meta_table, array('class_hash','class','metadata'), array(md5($class), $class, $meta));
+			Table_Manager::insert(Broker::$meta_table, array('class_hash','base_url','class','metadata'), array(md5($class), url::base(), $class, $meta));
 		}catch(Exception $e){echo 'metadata exists';}
 		//do nothing with the exception
 	}
+
+	/*
+		Deprecated
+	*/
 	public static function update_metadata($class, $meta)
 	{
 		try
