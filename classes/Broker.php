@@ -89,8 +89,8 @@ class Broker{
 		{
 			Broker::create_storage($parent, $parent_meta, $root, $root_meta);
 		}
-		
-		Table_Manager::create($table_name, $meta, null, ($id_as_foreign_key)? null:$_id);
+
+		Table_Manager::create($table_name, $meta, null, $_id);
 
 		if($id_as_foreign_key)
 		{

@@ -95,10 +95,18 @@ class Table_Manager{
 		{
 			$size = count($chunk);
 			foreach($chunk as $single_chunk)
-				DB::insert($single_chunk->table, $single_chunk->columns())->values($single_chunk->values())->execute();
+			{
+				try
+				{
+					DB::insert($single_chunk->table, $single_chunk->columns())->values($single_chunk->values())->execute();
+				}catch(Exception $e){}
+			}
 		}
 		else
-			DB::insert($chunk->table, $chunk->columns())->values($chunk->values())->execute();
+			try
+			{
+				DB::insert($chunk->table, $chunk->columns())->values($chunk->values())->execute();
+			}catch(Exception $e){}
 	}
 	private static function insert_and_unset($data, $table)
 	{
