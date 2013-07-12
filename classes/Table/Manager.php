@@ -205,6 +205,8 @@ class Table_Manager{
 		return DB::select()->from($table_name)->where($attr, $exp, $value)->execute();
 	}
 
+	
+
 	public static function retrieve($root, $class, $class_meta, $tables, $conditions, $id_col)
 	{
 		$root_table = $tables[$root];

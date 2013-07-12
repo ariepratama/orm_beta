@@ -10,10 +10,10 @@
 	$_res = DB::query(null, '
 		create table if not exists _meta(
 			class_hash varchar(32) not null,
-			base_url text,
+			base_url varchar(100),
 			class text not null,
 			metadata text not null,
-			primary key (class_hash)
+			primary key (class_hash, base_url)
 		)
 	')->execute();
 	// try{

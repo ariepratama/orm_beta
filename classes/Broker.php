@@ -15,7 +15,8 @@ class Broker{
 		if( ! array_key_exists($obj_class, Broker::$meta_cache))
 		{
 			// check in database if it's already exists
-			$_saved_meta = Table_Manager::retrieve_simple(Broker::$meta_table, Metadata_Instance::$p_key_column_name, '=', md5($obj_class))->as_array(); 
+			$query = DB::select()->from(Broker::$meta_table)->where(Metadata_Instance::$p_key_column_name, '=', md5($obj_class))->and_where('base_url','=', url::base());
+			$_saved_meta = $query->execute()->as_array();//Table_Manager::retrieve_simple(Broker::$meta_table, Metadata_Instance::$p_key_column_name, '=', md5($obj_class))->as_array(); 
 			
 			// try retrieve metadata from database
 			if ( ! empty ($_saved_meta))
@@ -41,7 +42,8 @@ class Broker{
 	{
 		if ( ! array_key_exists($class_name, Broker::$meta_cache))
 		{
-			$result = Table_Manager::retrieve_simple(Broker::$meta_table, Metadata_Instance::$p_key_column_name, '=', md5($class_name))->as_array();
+			$query = DB::select()->from(Broker::$meta_table)->where(Metadata_Instance::$p_key_column_name, '=', md5($class_name))->and_where('base_url','=', url::base());
+			$result = $query->execute()->as_array();//Table_Manager::retrieve_simple(Broker::$meta_table, Metadata_Instance::$p_key_column_name, '=', md5($class_name))->as_array();
 
 			if ( ! empty($result))
 				Broker::$meta_cache[$class_name] = new Metadata_Instance($class_name, json_decode(reset($result)['metadata'], true));
