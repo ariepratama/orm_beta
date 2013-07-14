@@ -484,8 +484,8 @@ abstract class PersistentObject extends Model{
 		foreach ($results as $res)
 		{
 			$assigned = PersistentObject::factory(get_class($this))->assign_value($res);
-			$assigned->_retrieved = true;
-			$assigned->_persisted = true;
+			// $assigned->_retrieved = true;
+			// $assigned->_persisted = true;
 
 			$objects[] =  $assigned;
 		}

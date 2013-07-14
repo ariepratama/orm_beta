@@ -178,8 +178,15 @@ class Table_Manager{
 
 			Utility::debug('update chunk: ',$chunk);	
 			// $merged = array_combine($chunk->columns(), $chunk->values());
+			
+
 			if (! empty($chunk))
+			{
+				// echo $chunk->table.' : ';
+				// print_r($chunk->update_columns());
+				// print_r($chunk->update_values());
 				DB::update($chunk->table)->set(array_combine($chunk->update_columns(), $chunk->update_values()))->where($chunk->id_column, '=', $chunk->id)->execute();
+			}
 			// DB::insert($chunk->table, $chunk->columns())->values($chunk->values())->execute();	
 		}
 	}
@@ -196,6 +203,7 @@ class Table_Manager{
 		}
 		$query = DB::update($table_name)->set($merged)->where($id_column,'=', $id_value);
 		
+
 		return $query->execute();
 	}
 

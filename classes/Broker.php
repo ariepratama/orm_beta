@@ -341,13 +341,18 @@ class Broker{
 
 	public static function delete($class, $queries)
 	{
-		$meta = Broker::get_metadata_for_class($class);
+		$meta = Broker::get_metadata_for_class(Utility::get_root_parent_class($class));
 		$table_name = $meta->table_name();
+		$res = Broker::retrieve($class, $queries, true);
+		if (! is_null($res) && ! empty($res))
+			foreach($res as $r)
+				$result = Table_Manager::delete($table_name, array(array('type' => 'where', 'parameters' => array('_id', '=', $r['_id']))));
+			
 
-
-		$res =  Table_Manager::delete($table_name, $queries);
+		// $res =  Table_Manager::delete($meta, $queries);
 				
-		return $res;
+		// return $res;
+		return $result;
 	}
 	public static function id_exist($class, $id)
 	{
