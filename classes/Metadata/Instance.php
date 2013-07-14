@@ -180,10 +180,12 @@ class Metadata_Instance{
 					// $foreign_name = $_attr_meta['rel_with'];
 					// only create column if one to one relationship
 					if($_attr_meta[Metadata_Constants::$REL_TYPE_STRING] == 'one_to_one'){
-						$obj = new $this->_class();
+						$related_class = $_attr_meta[Metadata_Constants::$REL_WITH_STRING];
+						$obj = new $related_class();
+						$rel_db_type = (is_null($obj->get_id_db_type()))? 'int':$obj->get_id_db_type();
 						// assume table name and object name are the same
 
-						$_attrs_arr[] = $_attr_meta[Metadata_Constants::$COLUMN_NAME_STRING].' '.$obj->get_id_db_type();
+						$_attrs_arr[] = $_attr_meta[Metadata_Constants::$COLUMN_NAME_STRING].' '.$rel_db_type;
 					}
 				}
 			}

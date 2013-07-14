@@ -113,7 +113,8 @@ class Broker{
 			foreach ($_meta->db_foreign_keys() as $key => $value) 
 			{
 				$foreign_meta = Broker::get_metadata_for_class($_meta->get_attribute_rel_with($key));
-				$related_table = $_meta->get_table_name_of($key); 
+				$related_table = $_meta->get_table_name_of($key);
+				
 
 				Table_Manager::add_foreign_keys($related_table, $key, $foreign_meta->table_name(), $value,'no action', 'no action');
 			}

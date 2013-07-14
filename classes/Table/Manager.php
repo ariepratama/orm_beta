@@ -57,7 +57,7 @@ class Table_Manager{
 		try{DB::query(null, $drop_fkey)->execute();}catch (Kohana_Exception $e){}
 
 		$f_key_sql = 'alter table '.$table_name.' add '.
-				 ' constraint '.$cons_name.
+				 ' constraint '.$cons_name.'_'.$table_ref.
 				 ' foreign key ('.($cols).')'.
 				 ' references '.$table_ref.'('.$ref_cols.')'.
 				 ' on delete '.$on_delete.
