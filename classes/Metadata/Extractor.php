@@ -158,18 +158,18 @@ class Metadata_Extractor{
 
 		return $separated;
 	}
-	private static function get_base_class($class)
-	{
+	// private static function get_base_class($class)
+	// {
 		
-		$current = $class;
-		$parent = get_parent_class($current);
-		while ($parent != 'PersistentObject')
-		{
-			$current = Metadata_Extractor::get_base_class($parent);
-			$parent = get_parent_class($current);
-		}
-		return $current;
-	}
+	// 	$current = $class;
+	// 	$parent = get_parent_class($current);
+	// 	while ($parent != 'PersistentObject')
+	// 	{
+	// 		$current = Metadata_Extractor::get_base_class($parent);
+	// 		$parent = get_parent_class($current);
+	// 	}
+	// 	return $current;
+	// }
 	private static function build_attributes_metadata_recursive($class, $separated)
 	{
 		$parent = get_parent_class($class);

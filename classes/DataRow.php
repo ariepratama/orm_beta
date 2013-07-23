@@ -20,10 +20,23 @@ class DataRow{
 				Utility::debug('warning this is not object', $row);
 
 			if(array_key_exists($table, $data1))
+			{
+				// if (is_object($data1[$table]))
+				// 	$data1[$table]->add_multiple_data($row->columns, $row->values);
+				// else
+				// 	$data1[$table] = array_merge($row, $data1[$table]);
 				if (is_object($data1[$table]))
-					$data1[$table]->add_multiple_data($row->columns, $row->values);
+				{
+					$temp = $data1[$table];
+					$data1[$table] = array($data1[$table], $row);
+				}
+				else if($table != DataConstants::$_PRIORITIES_)
+					array_push($data1[$table], $row);
 				else
+				{
 					$data1[$table] = array_merge($row, $data1[$table]);
+				}
+			}
 			else 
 				$data1[$table] = $row;
 
@@ -50,7 +63,9 @@ class DataRow{
 				else if($table != DataConstants::$_PRIORITIES_)
 					array_push($data1[$table], $row);
 				else
+				{
 					$data1[$table] = array_merge($row, $data1[$table]);
+				}
 			}
 			else 
 				$data1[$table] = $row;
@@ -83,8 +98,10 @@ class DataRow{
 
 	public function add_multiple_data($columns, $values)
 	{
-		$this->columns = array_merge($this->columns, $columns);
-		$this->values  = array_merge($this->values, $values);
+		$diff_columns = array_diff($columns, $this->columns);
+		$diff_values = array_diff($values, $this->values);
+		$this->columns = array_merge($this->columns, $diff_columns);
+		$this->values  = array_merge($this->values, $diff_values);
 		$this->id_exists = in_array($this->id_column, $this->columns);
 	}
 

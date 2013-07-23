@@ -96,17 +96,20 @@ class Table_Manager{
 			$size = count($chunk);
 			foreach($chunk as $single_chunk)
 			{
-				try
-				{
+				// try
+				// {
 					DB::insert($single_chunk->table, $single_chunk->columns())->values($single_chunk->values())->execute();
-				}catch(Exception $e){}
+				// }catch(Exception $e){}
 			}
 		}
 		else
-			try
-			{
+		{
+			// try
+			// {
+				echo $chunk->table.'<br/>';
 				DB::insert($chunk->table, $chunk->columns())->values($chunk->values())->execute();
-			}catch(Exception $e){}
+			// }catch(Exception $e){}
+		}
 	}
 	private static function insert_and_unset($data, $table)
 	{
@@ -277,4 +280,9 @@ class Table_Manager{
 		return DB::query(null, $sql)->execute();
 	}
 	
+	public static function get_columns_of($table)
+	{
+		return DB::query(Database::SELECT, 'show columns from '.$table)->execute()->as_array();
+		// return DB::select('column_name')->from('information_schema')->where('table_name', '=', $table)->execute()->as_array();
+	}
 }

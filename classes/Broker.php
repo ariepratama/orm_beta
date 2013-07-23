@@ -352,7 +352,7 @@ class Broker{
 		// $res =  Table_Manager::delete($meta, $queries);
 				
 		// return $res;
-		return $result;
+		return isset($result)? $result:null;
 	}
 	public static function id_exist($class, $id)
 	{
@@ -396,5 +396,37 @@ class Broker{
 		{
 			Table_Manager::update(Broker::$meta_table, 'class_hash', md5($class), array('class', 'metadata'), array($class, $meta));
 		}catch(Exception $e){echo 'metadata exists';}
+	}
+
+	public static function force_add_columns($meta)
+	{
+		$attributes = $meta->attributes();
+		$tables = array();
+
+		foreach ($attributes as $var_name => $attr_meta)
+		{
+			$table = $meta->get_table_name_of($var_name);
+			if (! array_key_exists($table, $tables))
+				$tables[$table] = array();
+
+			$tables[$table][$meta->get_column_name_of($var_name)] = $meta->get_db_type_of($var_name);
+		}
+
+		foreach($tables as $table => $cols)
+		{
+			$res = Table_Manager::get_columns_of($table);
+			$table_cols = array();
+			foreach ($res as $r)
+				$table_cols[] = $r['Field'];
+			$diff = array_diff(array_keys($cols), $table_cols);
+			$db_types = array();
+
+			if (! is_null($table_cols) && ! empty($diff))
+			{
+				foreach ($diff as $d)
+					$db_types[] = $cols[$d];
+				Table_Manager::force_add_column_to($table, $diff, $db_types);
+			}
+		}
 	}
 }

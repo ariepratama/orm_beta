@@ -93,11 +93,17 @@ class Metadata_Instance{
 		return array($this->_class => $this->_obj_meta);
 	}
 	public function is_attribute_object($name){
-		return $this->attributes()[$name][Metadata_Constants::$REL_TYPE_STRING] == 'one_to_one';
+		if (array_key_exists($name, $this->attributes()))
+			return $this->attributes()[$name][Metadata_Constants::$REL_TYPE_STRING] == 'one_to_one';
+		else
+			return false;
 
 	}
 	public function is_attribute_array($name){
-		return $this->attributes()[$name][Metadata_Constants::$REL_TYPE_STRING] == 'one_to_many';
+		if (array_key_exists($name, $this->attributes()))
+			return $this->attributes()[$name][Metadata_Constants::$REL_TYPE_STRING] == 'one_to_many';
+		else
+			return false;
 	}
 	
 	// get the attributes with meta attributes
@@ -127,19 +133,49 @@ class Metadata_Instance{
 
 	public function get_column_name_of($var_name)
 	{
-		
-		return $this->attributes()[$var_name][Metadata_Constants::$COLUMN_NAME_STRING];
+		if (array_key_exists($var_name, $this->attributes()))
+			return $this->attributes()[$var_name][Metadata_Constants::$COLUMN_NAME_STRING];
+		else
+			return null;
 	}
 
 	public function get_table_name_of($var_name)
 	{
-		return $this->attributes()[$var_name][Metadata_Constants::$TABLE_NAME_STRING];	
+		if (array_key_exists($var_name, $this->attributes()))
+			return $this->attributes()[$var_name][Metadata_Constants::$TABLE_NAME_STRING];
+		else
+			return null;	
 	}
 
 	public function get_attribute_rel_with($attr_name)
 	{
-		return $this->attributes()[$attr_name][Metadata_Constants::$REL_WITH_STRING];
+		if (array_key_exists($attr_name, $this->attributes()))
+			return $this->attributes()[$attr_name][Metadata_Constants::$REL_WITH_STRING];
+		else
+			return null;
 	}
+	
+	public function get_db_type_of($var_name)
+	{
+		if (array_key_exists($var_name, $this->attributes()))
+			return $this->attributes()[$var_name][Metadata_Constants::$DB_TYPE_STRING];
+		else
+			return null;
+	}
+
+	public function get_attribute_name_of($col_name)
+	{
+		$attrs = $this->attributes();
+		foreach ($attrs as $attr => $val)
+		{
+			if($val[Metadata_Constants::$COLUMN_NAME_STRING] == $col_name)
+				return $attr;
+		}
+
+		return null;
+	}
+
+	
 
 	public function has_foreign_keys()
 	{

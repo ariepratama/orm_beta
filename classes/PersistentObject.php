@@ -132,8 +132,8 @@ abstract class PersistentObject extends Model{
 		$vars = $this->_meta->attributes();
 		foreach($vars as $var => $value)
 		{	
-			unset($vars[$var]);
-			$vars[$value[Metadata_Constants::$COLUMN_NAME_STRING]] = $value[Metadata_Constants::$APP_TYPE_STRING];
+			// unset($vars[$var]);
+			$vars[$var] = $value[Metadata_Constants::$APP_TYPE_STRING];
 			
 		}
 
@@ -161,6 +161,7 @@ abstract class PersistentObject extends Model{
 				if (! is_null($val)  /*and ( ! $this->_meta->is_attribute_object($var_name) and! $this->_meta->is_attribute_array($var_name)) */)
 				{
 					$table = $this->_meta->get_table_name_of($var_name);
+
 					$id_col = $this->_meta->get_column_name_of(Metadata_Constants::$ID_METADATA_STRING);
 					if ( ! array_key_exists($table, $data))
 					{
@@ -175,6 +176,14 @@ abstract class PersistentObject extends Model{
 						$related_meta = Broker::get_metadata_for_class(get_class($val));
 						$related_table = $related_meta->table_name();
 						array_unshift($data[DataConstants::$_PRIORITIES_] , $related_table);
+						if ($related_meta->has_parent())
+						{
+							
+							$related_root = Utility::get_root_parent_class($_class);
+							$root_meta = Broker::get_metadata_for_class($related_root);
+							$root_table = $root_meta->table_name();
+							array_unshift($data[DataConstants::$_PRIORITIES_], $root_table);
+						}
 						$data = DataRow::data_merge($data, $val->get_data());
 					}
 					else
@@ -517,25 +526,33 @@ abstract class PersistentObject extends Model{
 			{
 				$is_object = false;
 				$is_array = false;
-				if (array_key_exists($attr, $this->_meta->attributes()) && $attr != PersistentObject::get_key_column_name() && $attr != PersistentObject::$primary_key_column_name)
+				$var_name = (array_key_exists($attr, $this->_meta->attributes()))? $attr : $this->_meta->get_attribute_name_of($attr);
+
+				if (! is_null($var_name) && $attr != PersistentObject::get_key_column_name() && $attr != PersistentObject::$primary_key_column_name)
 				{
 					$is_object = $this->_meta->is_attribute_object($attr);
 					$is_array = $this->_meta->is_attribute_array($attr);
 				}
 
-				if ( ! array_key_exists($attr, $this->included_attrs) && array_key_exists($attr, $this->_meta->attributes()))
+				if ( ! array_key_exists($attr, $this->included_attrs) &&  ! is_null($var_name))
 				{		
 					if(! $is_object && ! $is_array)
-						$this->$attr = $val;
+						$this->$var_name = $val;
 					else
-						$this->$attr = null;
+						$this->$var_name = null;
 				}
+				
 			}
 			return $this;
 		}
 
 		// returning null if values not found
 		return null;
+	}
+
+	public function force_add_columns()
+	{
+		Broker::force_add_columns($this->_meta);
 	}
 
 	public function where($attr, $operator, $val)
